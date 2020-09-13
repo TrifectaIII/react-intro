@@ -3,16 +3,26 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 function Square (props) {
-    let style = (props.winner ? {backgroundColor: 'yellow'} : {});
     return (
         <button 
-            style = {style}
+            style = {(props.winner ? {backgroundColor: 'yellow'} : {})}
             className="square" 
             onClick = {props.onClick}
         >
             {props.value}
         </button>
     );
+}
+
+function Toggle (props) {
+    let text = (props.descend ? "Ascending Order" : "Descending Order");
+    return (
+        <button
+            onClick = {props.onClick}  
+        >
+            {text}
+        </button>
+    )
 }
   
 class Board extends React.Component {
@@ -69,6 +79,7 @@ class Game extends React.Component {
             ],
             stepNumber: 0,
             xTurn: true,
+            descend: true,
         }
     }
 
@@ -104,7 +115,7 @@ class Game extends React.Component {
         const currentIndex = this.state.stepNumber;
 
         //render moves
-        const moves = history.map((step, move) => {
+        let moves = history.map((step, move) => {
             const desc = move ?
                 'Go to move #'+move+':' :
                 'Go to game start';
@@ -133,6 +144,10 @@ class Game extends React.Component {
             );
         });
 
+        if (!this.state.descend) {
+            moves = moves.reverse();
+        }  
+
         let status;
         if (winner.symbol) {
             status = 'Winner: '+ winner.symbol;
@@ -155,6 +170,10 @@ class Game extends React.Component {
                 <div className="game-info">
                 <div>{status}</div>
                 <ol>{moves}</ol>
+                <Toggle
+                    descend = {this.state.descend}
+                    onClick = {() => {this.setState({descend: !this.state.descend})}} 
+                />
                 </div>
             </div>
         );
